@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as process from 'process';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
@@ -18,6 +18,7 @@ import * as process from 'process';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    FeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
