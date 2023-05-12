@@ -1,8 +1,8 @@
-import { IUser } from '../../auth/models/user.interface';
+import { UserEntity } from '../../auth/models/user.entity';
 
 export interface IFeedPost {
   id?: number;
   body?: string;
   createdAt?: Date;
-  author?: IUser;
+  author?: UserEntity;
 }

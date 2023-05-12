@@ -16,6 +16,7 @@ export class UserEntity {
   password: string;
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: string;
+  @Column({ nullable: true })
   @ManyToOne(() => UserEntity, (userEntity) => userEntity.feedPosts)
   feedPosts: FeedPostEntity[];
 }

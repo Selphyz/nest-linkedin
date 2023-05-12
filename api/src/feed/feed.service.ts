@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { FeedPostEntity } from './models/post.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FeedPost } from './models/post.interface';
 import { from, Observable } from 'rxjs';
+import { UserEntity } from '../auth/models/user.entity';
+import { IFeedPost } from './models/post.interface';
 
 @Injectable()
 export class FeedService {
@@ -11,7 +12,12 @@ export class FeedService {
     @InjectRepository(FeedPostEntity)
     private readonly feedPostRepository: Repository<FeedPostEntity>,
   ) {}
-  createPost(feedPost: FeedPost): Observable<FeedPost> {
+
+  createPost(
+    user: UserEntity,
+    feedPost: IFeedPost,
+  ): Observable<FeedPostEntity> {
+    feedPost.author = user;
     return from(this.feedPostRepository.save(feedPost));
   }
 
@@ -19,7 +25,7 @@ export class FeedService {
     return from(this.feedPostRepository.find());
   }
 
-  updatePost(id: number, feedPost: FeedPost): Observable<UpdateResult> {
+  updatePost(id: number, feedPost: FeedPostEntity): Observable<UpdateResult> {
     return from(this.feedPostRepository.update(id, feedPost));
   }
 
@@ -27,10 +33,10 @@ export class FeedService {
     return from(this.feedPostRepository.delete(id));
   }
 
-  findPosts(take: number, skip: number): Observable<FeedPost[]> {
+  findPosts(take: number, skip: number): Observable<FeedPostEntity[]> {
     return from(
       this.feedPostRepository.findAndCount({ take, skip }).then(([posts]) => {
-        return <FeedPost[]>posts;
+        return <FeedPostEntity[]>posts;
       }),
     );
   }

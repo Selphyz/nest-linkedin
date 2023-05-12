@@ -7,36 +7,41 @@ import {
   Post,
   Put,
   Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { FeedPost } from './models/post.interface';
 import { Observable } from 'rxjs';
 import { FeedService } from './feed.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import { IFeedPost } from './models/post.interface';
+import { FeedPostEntity } from './models/post.entity';
 
 @Controller('feed')
 export class FeedController {
   constructor(private feedService: FeedService) {}
 
   @Post()
-  create(@Body() post: FeedPost): Observable<FeedPost> {
-    return this.feedService.createPost(post);
+  @UseGuards(JwtGuard)
+  create(@Body() post: IFeedPost, @Request() req): Observable<FeedPostEntity> {
+    return this.feedService.createPost(req.user, post);
   }
   @Get()
-  findAllPosts(): Observable<FeedPost[]> {
+  findAllPosts(): Observable<FeedPostEntity[]> {
     return this.feedService.readPosts();
   }
   @Get()
   findSelected(
     @Query('take') take = 1,
     @Query('skip') skip = 1,
-  ): Observable<FeedPost[]> {
+  ): Observable<FeedPostEntity[]> {
     take = take > 20 ? 20 : take;
     return this.feedService.findPosts(take, skip);
   }
   @Put(':id')
   updatePost(
     @Param('id') id: number,
-    @Body() feedPost: FeedPost,
+    @Body() feedPost: FeedPostEntity,
   ): Observable<UpdateResult> {
     return this.feedService.updatePost(id, feedPost);
   }
